@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แดชบอร์ดแสดงความก้าวหน้าโครงการ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', 'Arial', sans-serif;
+    background: #0a1628;
+    color: #fff;
+    min-height: 100vh;
+    padding: 28px 20px;
+  }
+
+  /* ---- TABS ---- */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .tab-btn {
+    padding: 10px 28px;
+    border-radius: 24px;
+    border: 1px solid #2d5a8e;
+    background: #152236;
+    color: #7a9cc5;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: #1e3a5f;
+    color: #5aabff;
+    border-color: #5aabff;
+    font-weight: bold;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ---- HEADER ---- */
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  header h1 { font-size: 26px; font-weight: bold; }
+  header p { font-size: 13px; color: #7a9cc5; margin-top: 6px; }
+
+  .week-badge {
+    display: inline-block;
+    background: #1e3a5f;
+    color: #5aabff;
+    font-size: 13px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-top: 10px;
+    border: 1px solid #2d5a8e;
+  }
+
+  /* ---- TRACK ---- */
+  .track-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  .student-row {
+    background: #152236;
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid #1e3a5f;
+  }
+
+  .student-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .student-name { font-size: 15px; font-weight: bold; color: #e0ecff; }
+  .project-name { font-size: 12px; color: #5a7fa8; margin-top: 3px; }
+  .percent-label { font-size: 20px; font-weight: bold; }
+
+  .track {
+    position: relative;
+    height: 20px;
+    background: #0f1b2d;
+    border-radius: 20px;
+    border: 1px solid #1e3a5f;
+  }
+
+  .track-fill { height: 100%; border-radius: 20px; }
+
+  .runner {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+  }
+
+  .label-start { position: absolute; left: 0; top: 24px; font-size: 11px; color: #5a7fa8; }
+  .label-end   { position: absolute; right: 0; top: 24px; font-size: 11px; color: #5a7fa8; }
+
+  .color-1 .track-fill { background: linear-gradient(90deg,#1a6fc4,#5aabff); }
+  .color-1 .percent-label { color: #5aabff; }
+  .color-2 .track-fill { background: linear-gradient(90deg,#1a8f5a,#3dd68c); }
+  .color-2 .percent-label { color: #3dd68c; }
+  .color-3 .track-fill { background: linear-gradient(90deg,#8f6a1a,#f5c623); }
+  .color-3 .percent-label { color: #f5c623; }
+  .color-4 .track-fill { background: linear-gradient(90deg,#7a1a8f,#c76bf5); }
+  .color-4 .percent-label { color: #c76bf5; }
+  .color-5 .track-fill { background: linear-gradient(90deg,#8f1a3a,#f55a7a); }
+  .color-5 .percent-label { color: #f55a7a; }
+  .color-6 .track-fill { background: linear-gradient(90deg,#1a7a8f,#3ad6e8); }
+  .color-6 .percent-label { color: #3ad6e8; }
+
+  /* ---- ADMIN FORM ---- */
+  .admin-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .admin-wrap h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #e0ecff;
+    text-align: center;
+  }
+
+  .week-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    background: #152236;
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid #1e3a5f;
+    align-items: center;
+  }
+
+  .week-row label { font-size: 14px; color: #7a9cc5; white-space: nowrap; }
+
+  .week-row input {
+    width: 70px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #2d5a8e;
+    background: #0f1b2d;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .student-form-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .student-form-item {
+    background: #152236;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #1e3a5f;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .student-form-item input {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #2d5a8e;
+    background: #0f1b2d;
+    color: #fff;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .student-form-item input::placeholder { color: #3a5a7a; }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .progress-wrap input[type="range"] {
+    width: 100px;
+    accent-color: #5aabff;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  .progress-num {
+    font-size: 14px;
+    font-weight: bold;
+    color: #5aabff;
+    width: 36px;
+    text-align: right;
+  }
+
+  .btn-delete {
+    background: #3a1a1a;
+    border: 1px solid #8f1a3a;
+    color: #f55a7a;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .btn-add {
+    background: #1e3a5f;
+    border: 1px solid #2d5a8e;
+    color: #5aabff;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .btn-save {
+    background: linear-gradient(90deg,#1a6fc4,#5aabff);
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  .btn-add:hover { background: #2d5a8e; }
+  .btn-save:hover { opacity: 0.9; }
+
+  .saved-msg {
+    text-align: center;
+    color: #3dd68c;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showPage('dashboard')">🏁 แดชบอร์ด</button>
+  <button class="tab-btn" onclick="showPage('admin')">⚙️ จัดการข้อมูล</button>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page active" id="page-dashboard">
+  <header>
+    <h1>🏁 แดชบอร์ดแสดงความก้าวหน้าโครงการ</h1>
+    <p>Project Progress Dashboard — วิชาโครงการ ปวส. 2</p>
+    <div class="week-badge" id="weekBadge">📅 สัปดาห์ที่ 1 / 10</div>
+  </header>
+  <div class="track-container" id="tracks"></div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin">
+  <div class="admin-wrap">
+    <h2>⚙️ จัดการข้อมูลนักเรียน</h2>
+
+    <div class="week-row">
+      <label>สัปดาห์ปัจจุบัน</label>
+      <input type="number" id="currentWeek" min="1" max="99" value="1"/>
+      <label>/ สัปดาห์ทั้งหมด</label>
+      <input type="number" id="totalWeeks" min="1" max="99" value="10"/>
+    </div>
+
+    <div class="student-form-list" id="studentForms"></div>
+
+    <button class="btn-add" onclick="addStudent()">+ เพิ่มนักเรียน</button>
+    <button class="btn-save" onclick="saveData()">💾 บันทึกและแสดงผล</button>
+    <div class="saved-msg" id="savedMsg">✅ บันทึกเรียบร้อยแล้ว!</div>
+  </div>
+</div>
+
+<script>
+  const emojis = ["🚀","🎯","⚡","🌟","🎮","🌈","🔥","💡","🎪","🏆"];
+
+  let students = JSON.parse(localStorage.getItem("dashboard_students") || "null") || [
+    { name: "นายสมชาย ใจดี",       project: "ระบบจัดการสต็อกสินค้า",          progress: 0 },
+    { name: "นางสาวสมหญิง แก้วมา", project: "แอปพลิเคชันจดบันทึก",            progress: 0 },
+    { name: "นายวิชัย รักเรียน",    project: "เว็บไซต์ร้านค้าออนไลน์",         progress: 0 },
+  ];
+
+  let currentWeek = parseInt(localStorage.getItem("dashboard_week") || "1");
+  let totalWeeks  = parseInt(localStorage.getItem("dashboard_totalWeeks") || "10");
+
+  function showPage(page) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("page-" + page).classList.add("active");
+    event.target.classList.add("active");
+    if (page === "admin") renderForms();
+    if (page === "dashboard") renderDashboard();
+  }
+
+  function renderDashboard() {
+    document.getElementById("weekBadge").textContent = `📅 สัปดาห์ที่ ${currentWeek} / ${totalWeeks}`;
+    const container = document.getElementById("tracks");
+    container.innerHTML = "";
+    students.forEach((s, i) => {
+      const colorClass = `color-${(i % 6) + 1}`;
+      const emoji = emojis[i % emojis.length];
+      const minLeft = 4, maxLeft = 96;
+      const leftPercent = minLeft + (s.progress / 100) * (maxLeft - minLeft);
+      const row = document.createElement("div");
+      row.className = `student-row ${colorClass}`;
+      row.innerHTML = `
+        <div class="student-info">
+          <div>
+            <div class="student-name">${emoji} ${s.name}</div>
+            <div class="project-name">${s.project}</div>
+          </div>
+          <div class="percent-label">${s.progress}%</div>
+        </div>
+        <div class="track">
+          <div class="track-fill" style="width:${s.progress}%"></div>
+          <div class="runner" style="left:${leftPercent}%">🏃</div>
+          <span class="label-start">🚩 เริ่ม</span>
+          <span class="label-end">เส้นชัย 🏁</span>
+        </div>
+        <div style="height:20px"></div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  function renderForms() {
+    document.getElementById("currentWeek").value = currentWeek;
+    document.getElementById("totalWeeks").value = totalWeeks;
+    const list = document.getElementById("studentForms");
+    list.innerHTML = "";
+    students.forEach((s, i) => {
+      const div = document.createElement("div");
+      div.className = "student-form-item";
+      div.innerHTML = `
+        <input type="text" placeholder="ชื่อนักเรียน" value="${s.name}" onchange="students[${i}].name=this.value"/>
+        <input type="text" placeholder="ชื่อโครงการ" value="${s.project}" onchange="students[${i}].project=this.value"/>
+        <div class="progress-wrap">
+          <input type="range" min="0" max="100" value="${s.progress}"
+            oninput="students[${i}].progress=parseInt(this.value); this.nextElementSibling.textContent=this.value+'%'"/>
+          <span class="progress-num">${s.progress}%</span>
+        </div>
+        <button class="btn-delete" onclick="removeStudent(${i})">✕</button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function addStudent() {
+    students.push({ name: "", project: "", progress: 0 });
+    renderForms();
+  }
+
+  function removeStudent(i) {
+    students.splice(i, 1);
+    renderForms();
+  }
+
+  function saveData() {
+    currentWeek = parseInt(document.getElementById("currentWeek").value) || 1;
+    totalWeeks  = parseInt(document.getElementById("totalWeeks").value) || 10;
+    localStorage.setItem("dashboard_students", JSON.stringify(students));
+    localStorage.setItem("dashboard_week", currentWeek);
+    localStorage.setItem("dashboard_totalWeeks", totalWeeks);
+    const msg = document.getElementById("savedMsg");
+    msg.style.display = "block";
+    setTimeout(() => msg.style.display = "none", 2500);
+  }
+
+  // init
+  renderDashboard();
+</script>
+</body>
+</html>
