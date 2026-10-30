@@ -4,396 +4,906 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>แดชบอร์ดแสดงความก้าวหน้าโครงการ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg1: #0a2016; --bg2: #134430;
+    --card: rgba(255,255,255,.055); --line: #25664a;
+    --cream: #fff4e0; --muted: #9cc7b0;
+    --track: #c0522f; --track-d: #9c3f20; --track-l: #ef8a5c;
+    --gold: #f5c518; --ok: #6ee7a0; --near: #ffd166; --behind: #ff7b72;
+    --spot: rgba(255,244,200,.20); --vig: rgba(0,0,0,.38); --shadow: rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"] {
+    --bg1: #f1f8ec; --bg2: #cfe8d5;
+    --card: rgba(255,255,255,.8); --line: #8fbfa3;
+    --cream: #0f2a1d; --muted: #3d6a54;
+    --gold: #a87400; --ok: #13804a; --near: #9a6700; --behind: #c62f2f;
+    --spot: rgba(255,230,140,.55); --vig: rgba(0,0,0,.10); --shadow: rgba(20,60,40,.18);
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Sarabun', 'Arial', sans-serif;
-    background: #0a1628;
-    color: #fff;
+    font-family: 'Kanit', 'Sarabun', 'Arial', sans-serif;
+    background:
+      radial-gradient(ellipse 60% 40% at 12% -4%, var(--spot), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 88% -4%, var(--spot), transparent 70%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    background-attachment: fixed;
+    color: var(--cream);
     min-height: 100vh;
-    padding: 28px 20px;
+    padding: 24px 16px 48px;
   }
 
-  /* ---- TABS ---- */
-  .tabs {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-
+  /* ---- แท็บ ---- */
+  .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 22px; }
   .tab-btn {
-    padding: 10px 28px;
-    border-radius: 24px;
-    border: 1px solid #2d5a8e;
-    background: #152236;
-    color: #7a9cc5;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
+    padding: 9px 24px; border-radius: 24px; border: 1px solid var(--line);
+    background: var(--card); color: var(--muted); font-size: 14px; cursor: pointer; font-family: inherit;
   }
-
-  .tab-btn.active {
-    background: #1e3a5f;
-    color: #5aabff;
-    border-color: #5aabff;
-    font-weight: bold;
-  }
+  .tab-btn.active { background: var(--track); color: #fff; border-color: var(--track-l); font-weight: 600; }
 
   .page { display: none; }
   .page.active { display: block; }
 
-  /* ---- HEADER ---- */
-  header {
-    text-align: center;
-    margin-bottom: 28px;
+  /* ---- หัวเว็บ ---- */
+  header { text-align: center; margin: 0 auto 18px; max-width: 820px; }
+  .checker {
+    height: 12px; margin-bottom: 16px; border-radius: 3px;
+    background: repeating-conic-gradient(#fff 0 25%, #111 0 50%) 0 0 / 24px 24px;
   }
-
-  header h1 { font-size: 26px; font-weight: bold; }
-  header p { font-size: 13px; color: #7a9cc5; margin-top: 6px; }
-
+  header h1 { font-size: 26px; font-weight: 700; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 6px; }
   .week-badge {
-    display: inline-block;
-    background: #1e3a5f;
-    color: #5aabff;
-    font-size: 13px;
-    padding: 5px 16px;
-    border-radius: 20px;
-    margin-top: 10px;
-    border: 1px solid #2d5a8e;
+    display: inline-block; background: rgba(245,197,24,.12); color: var(--gold); font-size: 13px;
+    padding: 5px 16px; border-radius: 20px; margin-top: 10px; border: 1px solid rgba(245,197,24,.5);
   }
 
-  /* ---- TRACK ---- */
-  .track-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 820px;
-    margin: 0 auto;
+  /* ---- โพเดียม ---- */
+  .podium { max-width: 820px; margin: 0 auto 16px; }
+  .pod-title { text-align: center; font-size: 14px; color: var(--gold); margin-bottom: 8px; font-weight: 600; }
+  .pod-row { display: flex; justify-content: center; align-items: flex-end; gap: 8px; }
+  .pod { flex: 1; max-width: 200px; text-align: center; }
+  .pod-medal { font-size: 26px; }
+  .pod-name { font-size: 12px; line-height: 1.3; min-height: 32px; padding: 0 4px; }
+  .pod-pct { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
+  .pod-base { border-radius: 8px 8px 0 0; }
+  .p1 .pod-base { height: 56px; background: linear-gradient(#f5c518, #c99a0a); }
+  .p2 .pod-base { height: 40px; background: linear-gradient(#cfd8dc, #90a4ae); }
+  .p3 .pod-base { height: 28px; background: linear-gradient(#cd7f32, #8d5524); }
+
+  /* ---- สรุป / ค้นหา / ปุ่ม ---- */
+  .summary { max-width: 820px; margin: 0 auto 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sum-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .sum-num { font-size: 26px; font-weight: 700; }
+  .sum-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .plan-note { max-width: 820px; margin: 0 auto 14px; font-size: 12px; color: var(--muted); text-align: center; }
+  .search {
+    max-width: 820px; margin: 0 auto 12px; display: block; width: 100%; padding: 10px 14px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--card); color: var(--cream); font-size: 14px; font-family: inherit;
   }
+  .search::placeholder { color: var(--muted); opacity: .7; }
 
-  .student-row {
-    background: #152236;
-    border-radius: 14px;
-    padding: 16px 20px;
-    border: 1px solid #1e3a5f;
+  .toolbar { max-width: 820px; margin: 0 auto 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .room-btns { display: flex; gap: 8px; }
+  .room-btn, .btn-sort {
+    background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    border-radius: 16px; padding: 6px 16px; font-size: 13px; cursor: pointer; font-family: inherit;
   }
+  .btn-sort { font-size: 12px; padding: 6px 14px; }
+  .room-btn.active, .btn-sort.on { background: var(--track); color: #fff; border-color: var(--track-l); font-weight: 600; }
 
-  .student-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+  /* ---- ลู่วิ่งของแต่ละคน ---- */
+  .track-container { display: flex; flex-direction: column; gap: 10px; max-width: 820px; margin: 0 auto; }
+
+  .student-row { background: var(--card); border-radius: 14px; padding: 12px 16px; border: 1px solid var(--line); }
+  .student-row.me { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+  .student-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+  .student-name { font-size: 14px; font-weight: 600; color: var(--cream); }
+  .student-no { color: var(--gold); font-weight: 400; margin-right: 6px; }
+  .project-name { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .right { display: flex; align-items: center; gap: 10px; }
+  .percent-label { font-size: 20px; font-weight: 700; color: var(--cream); min-width: 52px; text-align: right; }
+  .lv4 .percent-label { color: var(--gold); }
+
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; white-space: nowrap; border: 1px solid; }
+  .b-done   { color: var(--gold);   border-color: rgba(245,197,24,.6);  background: rgba(245,197,24,.12); }
+  .b-ok     { color: var(--ok);     border-color: rgba(110,231,160,.5); background: rgba(110,231,160,.1); }
+  .b-near   { color: var(--near);   border-color: rgba(255,209,102,.5); background: rgba(255,209,102,.1); }
+  .b-behind { color: var(--behind); border-color: rgba(255,123,114,.5); background: rgba(255,123,114,.1); }
+
+  .lane {
+    position: relative; height: 34px; margin-top: 2px; border-radius: 6px;
+    background: repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 2px, transparent 2px 16px), var(--track);
+    border-top: 2px solid rgba(255,255,255,.9); border-bottom: 2px solid rgba(255,255,255,.9);
   }
-
-  .student-name { font-size: 15px; font-weight: bold; color: #e0ecff; }
-  .project-name { font-size: 12px; color: #5a7fa8; margin-top: 3px; }
-  .percent-label { font-size: 20px; font-weight: bold; }
-
-  .track {
-    position: relative;
-    height: 20px;
-    background: #0f1b2d;
-    border-radius: 20px;
-    border: 1px solid #1e3a5f;
+  .lane-fill {
+    position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px 0 0 4px;
+    background: linear-gradient(90deg, var(--track-d), var(--track-l)); transition: width 1.3s cubic-bezier(.22,.8,.3,1) var(--d, 0ms);
   }
-
-  .track-fill { height: 100%; border-radius: 20px; }
-
+  .start-line { position: absolute; left: 8px; top: 0; bottom: 0; width: 3px; background: #fff; opacity: .9; z-index: 1; }
+  .finish {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 14px; z-index: 2; border-radius: 0 4px 4px 0;
+    background: repeating-conic-gradient(#fff 0 25%, #111 0 50%) 0 0 / 14px 14px;
+  }
+  .plan-mark { position: absolute; top: -4px; bottom: -4px; width: 3px; background: var(--gold); border-radius: 2px; z-index: 3; }
   .runner {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20px;
+    position: absolute; top: 50%; transform: translate(-50%, -50%); font-size: 20px; z-index: 4;
+    transition: left 1.3s cubic-bezier(.22,.8,.3,1) var(--d, 0ms); filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+  }
+  .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 24px; }
+
+  /* ---- ล็อกอิน ---- */
+  body.locked .tabs, body.locked .page, body.locked .user-bar { display: none !important; }
+  .login-wrap { display: none; min-height: 80vh; align-items: center; justify-content: center; }
+  body.locked .login-wrap { display: flex; }
+  .login-card {
+    width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 0 24px 28px; text-align: center; overflow: hidden;
+  }
+  .login-card .checker { margin: 0 -24px 24px; border-radius: 0; }
+  .login-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .login-card input {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg1); color: var(--cream); font-size: 16px; text-align: center; letter-spacing: 1px; margin-bottom: 12px; font-family: inherit;
+  }
+  .login-card button {
+    width: 100%; background: linear-gradient(90deg, var(--track-d), var(--track-l)); border: none; color: #fff;
+    border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .login-err { color: var(--behind); font-size: 13px; margin-top: 12px; min-height: 18px; }
+  .user-bar {
+    max-width: 820px; margin: 0 auto 14px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: var(--muted); gap: 10px; padding-right: 50px;
+  }
+  .btn-logout {
+    background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    border-radius: 14px; padding: 5px 14px; font-size: 12px; cursor: pointer; font-family: inherit;
   }
 
-  .label-start { position: absolute; left: 0; top: 24px; font-size: 11px; color: #5a7fa8; }
-  .label-end   { position: absolute; right: 0; top: 24px; font-size: 11px; color: #5a7fa8; }
-
-  .color-1 .track-fill { background: linear-gradient(90deg,#1a6fc4,#5aabff); }
-  .color-1 .percent-label { color: #5aabff; }
-  .color-2 .track-fill { background: linear-gradient(90deg,#1a8f5a,#3dd68c); }
-  .color-2 .percent-label { color: #3dd68c; }
-  .color-3 .track-fill { background: linear-gradient(90deg,#8f6a1a,#f5c623); }
-  .color-3 .percent-label { color: #f5c623; }
-  .color-4 .track-fill { background: linear-gradient(90deg,#7a1a8f,#c76bf5); }
-  .color-4 .percent-label { color: #c76bf5; }
-  .color-5 .track-fill { background: linear-gradient(90deg,#8f1a3a,#f55a7a); }
-  .color-5 .percent-label { color: #f55a7a; }
-  .color-6 .track-fill { background: linear-gradient(90deg,#1a7a8f,#3ad6e8); }
-  .color-6 .percent-label { color: #3ad6e8; }
-
-  /* ---- ADMIN FORM ---- */
-  .admin-wrap {
-    max-width: 700px;
-    margin: 0 auto;
+  .role-btns { display: flex; gap: 8px; margin-bottom: 14px; }
+  .login-card button.role-btn {
+    flex: 1; width: auto; background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    padding: 10px 8px; font-size: 14px; font-weight: 400; border-radius: 10px;
   }
+  .login-card button.role-btn.active { background: var(--track); color: #fff; border-color: var(--track-l); font-weight: 600; }
 
-  .admin-wrap h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #e0ecff;
-    text-align: center;
-  }
+  /* ---- จัดการข้อมูล ---- */
+  .admin-wrap { max-width: 700px; margin: 0 auto; }
+  .admin-wrap h2 { font-size: 18px; text-align: center; margin-bottom: 16px; color: var(--cream); }
 
   .week-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    background: #152236;
-    border-radius: 12px;
-    padding: 16px 20px;
-    border: 1px solid #1e3a5f;
-    align-items: center;
+    display: flex; gap: 12px; margin-bottom: 16px; background: var(--card); border-radius: 12px;
+    padding: 14px 18px; border: 1px solid var(--line); align-items: center; flex-wrap: wrap;
   }
-
-  .week-row label { font-size: 14px; color: #7a9cc5; white-space: nowrap; }
-
+  .week-row label { font-size: 14px; color: var(--muted); }
   .week-row input {
-    width: 70px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #2d5a8e;
-    background: #0f1b2d;
-    color: #fff;
-    font-size: 14px;
-    text-align: center;
+    width: 64px; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--bg1); color: var(--cream); font-size: 14px; text-align: center; font-family: inherit;
   }
 
-  .student-form-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+  .form-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .form-item {
+    background: var(--card); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--line);
+    display: grid; grid-template-columns: 1fr 150px 44px; gap: 10px; align-items: center;
   }
-
-  .student-form-item {
-    background: #152236;
-    border-radius: 12px;
-    padding: 14px 16px;
-    border: 1px solid #1e3a5f;
-    display: grid;
-    grid-template-columns: 1fr 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .student-form-item input {
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #2d5a8e;
-    background: #0f1b2d;
-    color: #fff;
-    font-size: 13px;
-    width: 100%;
-  }
-
-  .student-form-item input::placeholder { color: #3a5a7a; }
-
-  .progress-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .progress-wrap input[type="range"] {
-    width: 100px;
-    accent-color: #5aabff;
-    border: none;
-    background: none;
-    padding: 0;
-  }
-
-  .progress-num {
-    font-size: 14px;
-    font-weight: bold;
-    color: #5aabff;
-    width: 36px;
-    text-align: right;
-  }
-
-  .btn-delete {
-    background: #3a1a1a;
-    border: 1px solid #8f1a3a;
-    color: #f55a7a;
-    border-radius: 8px;
-    padding: 6px 10px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  .btn-add {
-    background: #1e3a5f;
-    border: 1px solid #2d5a8e;
-    color: #5aabff;
-    border-radius: 10px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    width: 100%;
-    margin-bottom: 12px;
-  }
+  .form-name { font-size: 13px; color: var(--cream); }
+  .form-item input[type="range"] { width: 100%; accent-color: var(--track-l); }
+  .form-num { font-size: 14px; font-weight: 600; color: var(--gold); text-align: right; }
 
   .btn-save {
-    background: linear-gradient(90deg,#1a6fc4,#5aabff);
-    border: none;
-    color: #fff;
-    border-radius: 10px;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: bold;
-    width: 100%;
+    background: linear-gradient(90deg, var(--track-d), var(--track-l)); border: none; color: #fff;
+    border-radius: 10px; padding: 12px 20px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; font-family: inherit;
+  }
+  .hint {
+    margin-top: 14px; font-size: 12px; color: var(--muted); line-height: 1.7;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px;
   }
 
-  .btn-add:hover { background: #2d5a8e; }
-  .btn-save:hover { opacity: 0.9; }
-
-  .saved-msg {
-    text-align: center;
-    color: #3dd68c;
-    font-size: 14px;
-    margin-top: 10px;
-    display: none;
+  @media (max-width: 520px) {
+    .form-item { grid-template-columns: 1fr 44px; }
+    .form-item input[type="range"] { grid-column: 1 / -1; grid-row: 2; }
+    .badge { display: none; }
   }
+
+  /* ---- เงา / แสงไฟสนาม ---- */
+  body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+    background: radial-gradient(ellipse at center, transparent 55%, var(--vig)); }
+  .student-row:not(.me), .sum-card { box-shadow: 0 6px 16px var(--shadow); }
+  .lane { box-shadow: inset 0 3px 6px rgba(0,0,0,.28); }
+  .pod-base { box-shadow: 0 6px 12px var(--shadow); }
+
+  /* ---- ปุ่มสลับโหมด ---- */
+  .theme-btn {
+    position: fixed; top: 12px; right: 12px; z-index: 60; width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--cream); font-size: 18px;
+    cursor: pointer; box-shadow: 0 4px 10px var(--shadow);
+  }
+
+  /* ---- ฉลองเมื่อถึง 100% ---- */
+  .student-row.done { border-color: rgba(245,197,24,.7); }
+  .done .lane { box-shadow: 0 0 14px rgba(245,197,24,.55), inset 0 3px 6px rgba(0,0,0,.2); }
+  .done .lane-fill {
+    background: linear-gradient(90deg, #b8860b, #f5c518, #fff1a8, #f5c518, #b8860b);
+    background-size: 200% 100%; animation: shimmer 2.4s linear infinite;
+  }
+  .spark { position: absolute; font-size: 12px; z-index: 5; animation: twinkle 1.6s infinite ease-in-out; }
+  .s1 { left: 20%; top: -8px; } .s2 { left: 55%; top: 20px; animation-delay: .5s; } .s3 { left: 80%; top: -6px; animation-delay: 1s; }
+  @keyframes twinkle { 0%, 100% { opacity: .2; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.2); } }
+  @keyframes shimmer { 0% { background-position: 0 0; } 100% { background-position: 200% 0; } }
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+  @media (prefers-reduced-motion: reduce) { .spark, .done .lane-fill { animation: none; } }
+
+  /* ---- แถบบันทึก ---- */
+  .save-bar {
+    position: sticky; bottom: 0; z-index: 20; margin-top: 14px; padding: 12px 12px 10px;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 14px 14px 0 0;
+    box-shadow: 0 -8px 16px var(--shadow);
+  }
+  .save-status { min-height: 20px; text-align: center; font-size: 13px; margin-bottom: 8px; color: var(--muted); }
+  .save-status.dirty { color: var(--near); }
+  .save-status.ok { color: var(--ok); }
+  .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+  .btn-sec {
+    flex: 1; background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    border-radius: 10px; padding: 10px 8px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+
+  /* ---- เชื่อม GitHub ---- */
+  .gh-box {
+    margin-top: 14px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--muted);
+  }
+  .gh-box summary { cursor: pointer; color: var(--cream); font-weight: 600; }
+  .gh-box input {
+    width: 100%; margin: 10px 0 8px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--bg1); color: var(--cream); font-size: 14px; font-family: inherit;
+  }
+  .gh-msg { min-height: 18px; margin-top: 8px; color: var(--near); }
+  .gh-help { font-size: 12px; line-height: 1.7; margin-top: 8px; }
+  .gh-on { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; color: var(--ok); }
+  .gh-on .btn-sec { flex: 0 0 auto; padding: 8px 12px; }
+  .btn-save:disabled { opacity: .6; cursor: wait; }
 </style>
 </head>
-<body>
+<body class="locked">
 
-<!-- TABS -->
-<div class="tabs">
-  <button class="tab-btn active" onclick="showPage('dashboard')">🏁 แดชบอร์ด</button>
-  <button class="tab-btn" onclick="showPage('admin')">⚙️ จัดการข้อมูล</button>
-</div>
-
-<!-- DASHBOARD PAGE -->
-<div class="page active" id="page-dashboard">
-  <header>
-    <h1>🏁 แดชบอร์ดแสดงความก้าวหน้าโครงการ</h1>
-    <p>Project Progress Dashboard — วิชาโครงการ ปวส. 2</p>
-    <div class="week-badge" id="weekBadge">📅 สัปดาห์ที่ 1 / 10</div>
-  </header>
-  <div class="track-container" id="tracks"></div>
-</div>
-
-<!-- ADMIN PAGE -->
-<div class="page" id="page-admin">
-  <div class="admin-wrap">
-    <h2>⚙️ จัดการข้อมูลนักเรียน</h2>
-
-    <div class="week-row">
-      <label>สัปดาห์ปัจจุบัน</label>
-      <input type="number" id="currentWeek" min="1" max="99" value="1"/>
-      <label>/ สัปดาห์ทั้งหมด</label>
-      <input type="number" id="totalWeeks" min="1" max="99" value="10"/>
+<!-- หน้าล็อกอิน -->
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="checker"></div>
+    <div class="login-title">🏁 แดชบอร์ดแสดงความก้าวหน้าโครงการ</div>
+    <div class="login-sub">เลือกประเภทผู้ใช้งาน แล้วเข้าสู่ระบบ</div>
+    <div class="role-btns">
+      <button type="button" class="role-btn active" data-role="student">🎓 นักศึกษา</button>
+      <button type="button" class="role-btn" data-role="teacher">👩‍🏫 อาจารย์</button>
     </div>
-
-    <div class="student-form-list" id="studentForms"></div>
-
-    <button class="btn-add" onclick="addStudent()">+ เพิ่มนักเรียน</button>
-    <button class="btn-save" onclick="saveData()">💾 บันทึกและแสดงผล</button>
-    <div class="saved-msg" id="savedMsg">✅ บันทึกเรียบร้อยแล้ว!</div>
+    <input type="text" id="loginInput" inputmode="numeric" maxlength="11" placeholder="รหัสนักศึกษา 11 หลัก" autocomplete="off">
+    <button id="loginBtn">เข้าสู่ระบบ</button>
+    <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
-<script>
-  const emojis = ["🚀","🎯","⚡","🌟","🎮","🌈","🔥","💡","🎪","🏆"];
+<div class="user-bar">
+  <span id="userInfo"></span>
+  <button class="btn-logout" id="logoutBtn">ออกจากระบบ</button>
+</div>
 
-  let students = JSON.parse(localStorage.getItem("dashboard_students") || "null") || [
-    { name: "นายสมชาย ใจดี",       project: "ระบบจัดการสต็อกสินค้า",          progress: 0 },
-    { name: "นางสาวสมหญิง แก้วมา", project: "แอปพลิเคชันจดบันทึก",            progress: 0 },
-    { name: "นายวิชัย รักเรียน",    project: "เว็บไซต์ร้านค้าออนไลน์",         progress: 0 },
+<div class="tabs">
+  <button class="tab-btn active" data-page="dashboard">🏁 แดชบอร์ด</button>
+  <button class="tab-btn" data-page="admin">⚙️ จัดการข้อมูล</button>
+</div>
+
+<!-- แดชบอร์ด -->
+<div class="page active" id="page-dashboard">
+  <header>
+    <div class="checker"></div>
+    <h1>🏁 แดชบอร์ดแสดงความก้าวหน้าโครงการ</h1>
+    <p>Project Progress Dashboard — วิชาโครงการ ปวส. 2</p>
+    <div class="week-badge" id="weekBadge"></div>
+  </header>
+  <div class="podium" id="podium"></div>
+  <div class="summary" id="summary"></div>
+  <div class="plan-note" id="planNote"></div>
+  <input type="search" class="search" id="searchInput" placeholder="🔍 ค้นหาชื่อหรือรหัสนักศึกษา">
+  <div class="toolbar"><div class="room-btns"></div><button class="btn-sort" id="sortBtn">เรียงตามความก้าวหน้า</button></div>
+  <div class="track-container" id="tracks"></div>
+</div>
+
+<!-- จัดการข้อมูล -->
+<div class="page" id="page-admin">
+  <div class="admin-wrap">
+    <h2>⚙️ อัปเดตความก้าวหน้า</h2>
+
+    <div class="week-row">
+      <label>สัปดาห์ปัจจุบัน</label>
+      <input type="number" id="weekInput" min="1" max="99">
+      <label>/ ทั้งหมด</label>
+      <input type="number" id="totalInput" min="1" max="99">
+    </div>
+
+    <div class="room-btns" style="margin-bottom:12px; justify-content:center"></div>
+    <div class="form-list" id="forms"></div>
+
+    <div class="hint">
+      <b>บันทึก</b> = จำค่าที่ปรับไว้ในเครื่องนี้ (รีเฟรชแล้วไม่หาย) และเห็นผลที่แท็บ "แดชบอร์ด" ทันที แต่คนอื่นยังไม่เห็น<br>
+      ถ้าต้องการให้ทุกคนเห็น: กดบันทึก → กดดาวน์โหลดไฟล์ → นำไฟล์ progress.json ไปอัปโหลดทับไฟล์เดิมใน GitHub (Add file → Upload files → Commit changes) รอประมาณ 1 นาทีแล้วรีเฟรชหน้าเว็บ
+    </div>
+
+    <details class="gh-box" id="ghBox">
+      <summary id="ghSummary">🔗 เชื่อม GitHub (ให้ปุ่มบันทึกส่งขึ้นเว็บเอง)</summary>
+      <div id="ghOff">
+        <input type="password" id="ghTokenInput" placeholder="วาง GitHub token ที่นี่" autocomplete="off">
+        <button class="btn-sec" id="ghConnectBtn" style="width:100%">เชื่อมต่อ</button>
+        <div class="gh-msg" id="ghMsg"></div>
+        <div class="gh-help">
+          วิธีสร้าง token: GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token →
+          เลือก Only select repositories เฉพาะ project-dashbord → ตั้ง Contents เป็น Read and write<br>
+          token จะถูกเก็บในเบราว์เซอร์ของเครื่องนี้เท่านั้น ห้ามส่งให้ใครหรือใส่ในโค้ด
+        </div>
+      </div>
+      <div class="gh-on" id="ghOn" style="display:none">
+        <span>✅ เชื่อมต่อแล้ว กดบันทึกแล้วขึ้นเว็บทันที</span>
+        <button class="btn-sec" id="ghDisconnectBtn">ยกเลิกการเชื่อม</button>
+      </div>
+    </details>
+
+    <div class="save-bar">
+      <div class="save-status" id="saveStatus"></div>
+      <button class="btn-save" id="saveBtn">💾 บันทึก</button>
+      <div class="btn-row">
+        <button class="btn-sec" id="downloadBtn">⬇️ ดาวน์โหลด progress.json</button>
+        <button class="btn-sec" id="clearBtn">↩️ ล้างที่บันทึกไว้</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="สลับโหมดสว่าง/มืด">☀️</button>
+
+<script>
+  // ============================================
+  // รายชื่อนักเรียน (ชื่อโครงการใส่ใน project ได้เลย)
+  // ============================================
+  const students = [
+    { id: 1, sid: "68319100001",  name: "นางสาวจิณณพัต บัวฉุน",        project: "" },
+    { id: 2, sid: "68319100002",  name: "นางสาวธนาภา แนบเนียน",        project: "" },
+    { id: 3, sid: "68319100003",  name: "นางสาวนันทกา ด้วงมาก",        project: "" },
+    { id: 4, sid: "68319100005",  name: "นางสาวปุณยวีร์ สว่างเนตร",     project: "" },
+    { id: 5, sid: "68319100006",  name: "นางสาวพัชรินทร์พร บ้านสร้าง",   project: "" },
+    { id: 6, sid: "68319100008",  name: "นางสาวเมษา ชั่งทรัพย์",        project: "" },
+    { id: 7, sid: "68319100009",  name: "นางสาวสวิตตา พลสุจริต",       project: "" },
+    { id: 8, sid: "68319100010",  name: "นางสาวสุธาสินี จอกทอง",       project: "" },
+    { id: 9, sid: "68319100011",  name: "นางสาวอนันตยา คุ้มเกรง",      project: "" },
+    { id: 10, sid: "68319100012", name: "นางสาวอนุพร เตยสันเทียะ",     project: "" },
+    { id: 11, sid: "68319100013", name: "นางสาวอภิญญา ปานริทธิ์",      project: "" },
+    { id: 12, sid: "68319100014", name: "นางสาวอมรรัตน์ แจงเจริญ",     project: "" },
+    { id: 13, sid: "68319100015", name: "นางสาวอารยา เฉลยวาเรศ",       project: "" },
+    { id: 14, sid: "68319100016", name: "นายกิตติกานต์ รักษาศรี",       project: "" },
+    { id: 15, sid: "68319100017", name: "นายจตุพร คงนคร",             project: "" },
+    { id: 16, sid: "68319100018", name: "นายจักรพันธ์ ศรีแก้ว",         project: "" },
+    { id: 17, sid: "68319100019", name: "นายจารุกิตต์ ยิ้มนิ่มนวล",      project: "" },
+    { id: 18, sid: "68319100020", name: "นายณัฏฐกร คุณสมบัติ",         project: "" },
+    { id: 19, sid: "68319100021", name: "นายณัฐพงษ์ แก้วโคราช",        project: "" },
+    { id: 20, sid: "68319100022", name: "นายณัฐวัฒน์ ชื่นกมล",          project: "" },
+    { id: 21, sid: "68319100023", name: "นายเตวิช แฟงรัก",            project: "" },
+    { id: 22, sid: "68319100024", name: "นายธนัตถ์สิษฐ์ กุลชนะภิญโญ",   project: "" },
+    { id: 23, sid: "68319100025", name: "นายธีรวุฒิ คุ้มลาภ",           project: "" },
+    { id: 24, sid: "68319100027", name: "นายภาคภูมิ อ่อนเอี่ยม",        project: "" },
+    { id: 25, sid: "68319100028", name: "นายภูริพัฒน์ ทองไพบูลย์",      project: "" },
+    { id: 26, sid: "68319100029", name: "นายรามิล ยอดมีกลิ่น",          project: "" },
+    { id: 27, sid: "68319100030", name: "นายสรวิชญ์ วรรณบูรณ",         project: "" },
+    { id: 28, sid: "68319100031", name: "นายสุทธิภัทร บุญกระจ่าง",      project: "" },
+    { id: 29, sid: "68319100032", name: "นายอนุรักษ์ ชี้แจง",           project: "" },
+    { id: 30, sid: "68319100033", name: "นายอภินันท์ จันทร์ทอง",        project: "" },
+    { id: 31, sid: "68319100034", name: "นางสาวกาญติมา คุณุรัตน์",      project: "" },
+    { id: 32, sid: "68319100035", name: "นางสาวณชนก จันทร์รุ่งเรือง",    project: "" },
+    { id: 33, sid: "68319100036", name: "นางสาวธิดารัตน์ เฉลยทัศน์",     project: "" },
+    { id: 34, sid: "68319100037", name: "นางสาวเบญจพร ดังถวิล",        project: "" },
+    { id: 35, sid: "68319100038", name: "นางสาวอุษามณี นัยชิต",         project: "" },
+    { id: 36, sid: "68319100039", name: "นายกฤษกร ภูมิรัตน์",           project: "" },
+    { id: 37, sid: "68319100040", name: "นายการัณยภาส นามจันดี",       project: "" },
+    { id: 38, sid: "68319100041", name: "นายเกียรติ์สกุล กลัดสนิท",      project: "" },
+    { id: 39, sid: "68319100042", name: "นายณัฐพล พึ่งสุรินทร์",         project: "" },
+    { id: 40, sid: "68319100043", name: "นายตักสิลา แดงประสาน",        project: "" },
+    { id: 41, sid: "68319100044", name: "นายปวริศร์ หุ่นแก้ว",          project: "" },
+    { id: 42, sid: "68319100045", name: "นายภคิน นาคปานเสือ",          project: "" },
+    { id: 43, sid: "68319100046", name: "นายเมฆวัตร คล้ายพงศ์",         project: "" },
+    { id: 44, sid: "68319100047", name: "นายรังสิธร สุขแสงจันทร์",       project: "" },
+    { id: 45, sid: "68319100048", name: "นายอัษราวุธ รสชเอม",          project: "" },
+    { id: 46, sid: "68319100049", name: "นายทิฆัมพร ดงดอน",           project: "" },
+    { id: 47, sid: "68319100050", name: "นายบริพัตร ประเสริฐวงษ์",      project: "" },
   ];
 
-  let currentWeek = parseInt(localStorage.getItem("dashboard_week") || "1");
-  let totalWeeks  = parseInt(localStorage.getItem("dashboard_totalWeeks") || "10");
+  // ============================================
+  // โค้ดแสดงผล (ไม่ต้องแก้ไขส่วนนี้)
+  // ============================================
+  let week = 1, totalWeeks = 15, sortOn = false, room = 1, currentUser = null;
+  // ห้อง 1 = คนที่ 1-30, ห้อง 2 = คนที่ 31-47
+  function roomOf(s) { return s.id <= 30 ? 1 : 2; }
+  const progress = {};
+  students.forEach(s => progress[s.id] = 0);
 
-  function showPage(page) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById("page-" + page).classList.add("active");
-    event.target.classList.add("active");
-    if (page === "admin") renderForms();
-    if (page === "dashboard") renderDashboard();
+  let dataLoaded = false, animateNext = true, confettiShown = false;
+  let userRole = null, published = null, dirty = false;
+
+  function launchConfetti() {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const c = document.createElement("canvas");
+    c.className = "confetti";
+    c.width = innerWidth; c.height = innerHeight;
+    document.body.appendChild(c);
+    const ctx = c.getContext("2d");
+    const colors = ["#f5c518", "#ef8a5c", "#6ee7a0", "#ffffff", "#ff7b72", "#7cc4ff"];
+    const ps = Array.from({ length: 140 }, () => ({
+      x: c.width / 2 + (Math.random() - .5) * 120, y: c.height * .35,
+      vx: (Math.random() - .5) * 12, vy: -Math.random() * 12 - 3,
+      s: Math.random() * 6 + 4, r: Math.random() * 6.28, vr: (Math.random() - .5) * .4,
+      c: colors[Math.floor(Math.random() * colors.length)]
+    }));
+    let t = 0;
+    (function tick() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      ps.forEach(p => {
+        p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); ctx.restore();
+      });
+      if (++t < 150) requestAnimationFrame(tick); else c.remove();
+    })();
+  }
+
+  function level(p) { return p >= 90 ? 4 : p >= 60 ? 3 : p >= 30 ? 2 : 1; }
+
+  // ============================================
+  // เชื่อม GitHub: ปุ่มบันทึกส่ง progress.json ขึ้น repository ให้เอง
+  // ============================================
+  const GH = { owner: "natthakornkunsombut-dotcom", repo: "project-dashbord", branch: "main", path: "progress.json" };
+  const ghApi = `https://api.github.com/repos/${GH.owner}/${GH.repo}`;
+
+  function ghToken() { try { return localStorage.getItem("gh_token") || ""; } catch (e) { return ""; } }
+  function ghHeaders(t) {
+    return { "Authorization": "Bearer " + t, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+  }
+
+  function renderGitHub() {
+    const on = !!ghToken();
+    document.getElementById("ghOff").style.display = on ? "none" : "";
+    document.getElementById("ghOn").style.display = on ? "" : "none";
+    document.getElementById("ghSummary").textContent = on
+      ? "🔗 เชื่อม GitHub: ✅ เชื่อมต่อแล้ว"
+      : "🔗 เชื่อม GitHub (ให้ปุ่มบันทึกส่งขึ้นเว็บเอง)";
+    document.getElementById("saveBtn").textContent = on ? "💾 บันทึกและส่งขึ้นเว็บ" : "💾 บันทึก";
+  }
+
+  async function connectGitHub() {
+    const t = document.getElementById("ghTokenInput").value.trim();
+    const msg = document.getElementById("ghMsg");
+    if (!t) { msg.textContent = "วาง token ก่อนครับ"; return; }
+    msg.textContent = "⏳ กำลังตรวจสอบ...";
+    try {
+      const r = await fetch(ghApi, { headers: ghHeaders(t) });
+      if (r.status === 401) { msg.textContent = "❌ token ไม่ถูกต้องหรือหมดอายุ"; return; }
+      if (r.status === 404) { msg.textContent = "❌ token นี้เข้าถึง repository ไม่ได้ (ตรวจว่าเลือก project-dashbord ถูกตัว)"; return; }
+      if (!r.ok) { msg.textContent = "❌ ตรวจสอบไม่สำเร็จ (รหัส " + r.status + ")"; return; }
+      const info = await r.json();
+      if (info.permissions && info.permissions.push === false) {
+        msg.textContent = "❌ token อ่านได้อย่างเดียว ต้องตั้ง Contents เป็น Read and write";
+        return;
+      }
+      try { localStorage.setItem("gh_token", t); }
+      catch (e) { msg.textContent = "❌ เบราว์เซอร์ไม่ยอมเก็บ token (อาจอยู่ในโหมดส่วนตัว)"; return; }
+      document.getElementById("ghTokenInput").value = "";
+      msg.textContent = "";
+      renderGitHub();
+    } catch (e) {
+      msg.textContent = "❌ เชื่อมต่อ GitHub ไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่";
+    }
+  }
+
+  function disconnectGitHub() {
+    try { localStorage.removeItem("gh_token"); } catch (e) {}
+    renderGitHub();
+  }
+
+  // ส่ง progress.json ขึ้น GitHub (อ่านค่า sha ของไฟล์เดิมก่อน แล้วค่อยเขียนทับ)
+  async function publishToGitHub() {
+    const t = ghToken();
+    const url = `${ghApi}/contents/${GH.path}`;
+    const text = JSON.stringify({ week, totalWeeks, progress }, null, 2) + "\n";
+    const content = btoa(unescape(encodeURIComponent(text)));
+    for (let attempt = 0; attempt < 2; attempt++) {
+      let sha;
+      const g = await fetch(`${url}?ref=${GH.branch}`, { headers: ghHeaders(t), cache: "no-store" });
+      if (g.status === 200) sha = (await g.json()).sha;
+      else if (g.status !== 404) return { ok: false, status: g.status };
+      const put = await fetch(url, {
+        method: "PUT",
+        headers: { ...ghHeaders(t), "Content-Type": "application/json" },
+        body: JSON.stringify({ message: `อัปเดตความก้าวหน้า สัปดาห์ที่ ${week}`, content, sha, branch: GH.branch })
+      });
+      if (put.ok) return { ok: true };
+      if (put.status !== 409 && put.status !== 422) return { ok: false, status: put.status };
+    }
+    return { ok: false, status: 409 };
+  }
+
+  async function saveAndPublish() {
+    if (!saveDraft()) return;
+    renderDashboard();
+    if (!ghToken()) return;
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    setStatus("⏳ กำลังส่งขึ้นเว็บ...");
+    try {
+      const r = await publishToGitHub();
+      if (r.ok) {
+        published = { week, totalWeeks, progress: { ...progress } };
+        setStatus("✅ ส่งขึ้นเว็บแล้ว ทุกคนจะเห็นข้อมูลใหม่ภายใน 1-2 นาที", true);
+      } else if (r.status === 401) {
+        setStatus("⚠️ token ไม่ถูกต้องหรือหมดอายุ (บันทึกในเครื่องไว้แล้ว) สร้าง token ใหม่แล้วเชื่อมอีกครั้ง");
+      } else if (r.status === 403 || r.status === 404) {
+        setStatus("⚠️ token ไม่มีสิทธิ์เขียนไฟล์ใน repository นี้ (บันทึกในเครื่องไว้แล้ว) ตรวจสิทธิ์ Contents: Read and write");
+      } else {
+        setStatus("⚠️ ส่งขึ้นเว็บไม่สำเร็จ (รหัส " + r.status + ") บันทึกในเครื่องไว้แล้ว ลองใหม่หรือใช้ปุ่มดาวน์โหลด");
+      }
+    } catch (e) {
+      setStatus("⚠️ ส่งขึ้นเว็บไม่ได้ (เชื่อมต่อ GitHub ไม่ได้) บันทึกในเครื่องไว้แล้ว");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function readDraft() {
+    try {
+      const d = JSON.parse(localStorage.getItem("draft") || "null");
+      return d && d.progress ? d : null;
+    } catch (e) { return null; }
+  }
+
+  // อาจารย์/ผู้จัดทำเห็นค่าที่บันทึกไว้ในเครื่อง, นักศึกษาเห็นค่าที่เผยแพร่บนเว็บ
+  function syncState() {
+    const src = (userRole === "teacher" && readDraft()) || published;
+    if (!src) return;
+    week = src.week || 1;
+    totalWeeks = src.totalWeeks || 15;
+    students.forEach(s => { progress[s.id] = (src.progress && src.progress[s.id]) || 0; });
+  }
+
+  function setStatus(msg, good) {
+    const el = document.getElementById("saveStatus");
+    if (!el) return;
+    if (msg) { el.className = "save-status " + (good ? "ok" : "dirty"); el.textContent = msg; return; }
+    if (dirty) { el.className = "save-status dirty"; el.textContent = "● มีการแก้ไขที่ยังไม่ได้บันทึก"; }
+    else if (readDraft()) { el.className = "save-status ok"; el.textContent = "✅ บันทึกไว้ในเครื่องนี้แล้ว"; }
+    else { el.className = "save-status"; el.textContent = ""; }
+  }
+
+  function markDirty() { dirty = true; setStatus(); }
+
+  function saveDraft() {
+    week = parseInt(document.getElementById("weekInput").value) || week;
+    totalWeeks = parseInt(document.getElementById("totalInput").value) || totalWeeks;
+    try {
+      localStorage.setItem("draft", JSON.stringify({ week, totalWeeks, progress }));
+      dirty = false;
+      setStatus();
+      return true;
+    } catch (e) {
+      setStatus("⚠️ บันทึกในเครื่องไม่ได้ (เบราว์เซอร์ปิดการจัดเก็บ) ใช้ปุ่มดาวน์โหลดแทน");
+      return false;
+    }
+  }
+
+  function clearDraft() {
+    if (!confirm("ล้างค่าที่บันทึกไว้ในเครื่องนี้ และกลับไปใช้ข้อมูลที่เผยแพร่บนเว็บ?")) return;
+    try { localStorage.removeItem("draft"); } catch (e) {}
+    dirty = false;
+    syncState();
+    renderForms();
+    renderDashboard();
+  }
+
+  function planStatus(p, exp) {
+    if (p >= 100)     return { k: "done",   t: "✅ เสร็จแล้ว" };
+    if (p >= exp)     return { k: "ok",     t: "ตามแผน" };
+    if (p >= exp - 10) return { k: "near",   t: "ใกล้เคียงแผน" };
+    return { k: "behind", t: "ช้ากว่าแผน" };
   }
 
   function renderDashboard() {
-    document.getElementById("weekBadge").textContent = `📅 สัปดาห์ที่ ${currentWeek} / ${totalWeeks}`;
-    const container = document.getElementById("tracks");
-    container.innerHTML = "";
-    students.forEach((s, i) => {
-      const colorClass = `color-${(i % 6) + 1}`;
-      const emoji = emojis[i % emojis.length];
-      const minLeft = 4, maxLeft = 96;
-      const leftPercent = minLeft + (s.progress / 100) * (maxLeft - minLeft);
+    document.getElementById("weekBadge").textContent = `📅 สัปดาห์ที่ ${week} / ${totalWeeks}`;
+    const expected = Math.min(100, Math.round((week / totalWeeks) * 100));
+    const inRoom = students.filter(s => roomOf(s) === room);
+
+    // โพเดียม 3 อันดับแรกของห้อง
+    const ranked = [...inRoom].sort((x, y) => progress[y.id] - progress[x.id]).slice(0, 3);
+    const podium = document.getElementById("podium");
+    if (ranked.length === 3 && progress[ranked[0].id] > 0) {
+      const short = n => n.replace(/^(นางสาว|นาย)/, "");
+      const cell = (s, medal, cls) =>
+        `<div class="pod ${cls}"><div class="pod-medal">${medal}</div><div class="pod-name">${short(s.name)}</div><div class="pod-pct">${progress[s.id]}%</div><div class="pod-base"></div></div>`;
+      podium.innerHTML = `<div class="pod-title">🏆 3 อันดับแรกของห้อง ${room}</div>
+        <div class="pod-row">${cell(ranked[1], "🥈", "p2")}${cell(ranked[0], "🥇", "p1")}${cell(ranked[2], "🥉", "p3")}</div>`;
+    } else {
+      podium.innerHTML = "";
+    }
+
+    // สรุปภาพรวมห้อง
+    const avg = inRoom.length ? Math.round(inRoom.reduce((t, s) => t + progress[s.id], 0) / inRoom.length) : 0;
+    const done = inRoom.filter(s => progress[s.id] >= 100).length;
+    const behind = inRoom.filter(s => planStatus(progress[s.id], expected).k === "behind").length;
+    document.getElementById("summary").innerHTML = `
+      <div class="sum-card"><div class="sum-num" style="color:var(--gold)">${avg}%</div><div class="sum-label">ความก้าวหน้าเฉลี่ย</div></div>
+      <div class="sum-card"><div class="sum-num" style="color:var(--ok)">${done}</div><div class="sum-label">เสร็จแล้ว (คน)</div></div>
+      <div class="sum-card"><div class="sum-num" style="color:var(--behind)">${behind}</div><div class="sum-label">ช้ากว่าแผน (คน)</div></div>`;
+    document.getElementById("planNote").textContent =
+      `เส้นทองบนลู่ = เป้าหมายตามแผนของสัปดาห์นี้ (${expected}%)`;
+
+    // ค้นหา + เรียงลำดับ
+    let list = sortOn
+      ? [...inRoom].sort((x, y) => progress[y.id] - progress[x.id])
+      : inRoom;
+    const q = document.getElementById("searchInput").value.trim().toLowerCase();
+    if (q) list = list.filter(s => s.name.toLowerCase().includes(q) || s.sid.includes(q));
+
+    const box = document.getElementById("tracks");
+    box.innerHTML = "";
+    if (list.length === 0) {
+      box.innerHTML = '<div class="empty">ไม่พบรายชื่อที่ค้นหาในห้องนี้</div>';
+      return;
+    }
+    const anim = animateNext;
+    animateNext = false;
+    list.forEach((s, i) => {
+      const p = progress[s.id];
+      const left = 3 + (p / 100) * 94;
+      const st = planStatus(p, expected);
       const row = document.createElement("div");
-      row.className = `student-row ${colorClass}`;
+      row.className = `student-row lv${level(p)}${p >= 100 ? " done" : ""}` + (currentUser && currentUser.id === s.id ? " me" : "");
       row.innerHTML = `
         <div class="student-info">
           <div>
-            <div class="student-name">${emoji} ${s.name}</div>
-            <div class="project-name">${s.project}</div>
+            <div class="student-name"><span class="student-no">${inRoom.indexOf(s) + 1}.</span>${s.name}</div>
+            <div class="project-name">รหัส ${s.sid}${s.project ? " · " + s.project : ""}</div>
           </div>
-          <div class="percent-label">${s.progress}%</div>
+          <div class="right">
+            <span class="badge b-${st.k}">${st.t}</span>
+            <div class="percent-label">${p}%</div>
+          </div>
         </div>
-        <div class="track">
-          <div class="track-fill" style="width:${s.progress}%"></div>
-          <div class="runner" style="left:${leftPercent}%">🏃</div>
-          <span class="label-start">🚩 เริ่ม</span>
-          <span class="label-end">เส้นชัย 🏁</span>
-        </div>
-        <div style="height:20px"></div>
-      `;
-      container.appendChild(row);
+        <div class="lane">
+          <div class="lane-fill" style="width:${anim ? 0 : p}%" data-w="${p}"></div>
+          <div class="start-line"></div>
+          ${expected > 0 && expected < 100 ? `<div class="plan-mark" style="left:${expected}%"></div>` : ""}
+          <div class="finish"></div>
+          ${p >= 100 ? '<span class="spark s1">✨</span><span class="spark s2">✨</span><span class="spark s3">✨</span>' : ""}
+          <div class="runner" style="left:${anim ? 3 : left}%" data-left="${left}">${p >= 100 ? "🏆" : p <= 0 ? "🚶" : "🏃"}</div>
+        </div>`;
+      row.style.setProperty("--d", Math.min(i, 14) * 45 + "ms");
+      box.appendChild(row);
     });
+    if (anim) {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        box.querySelectorAll(".student-row").forEach(r => {
+          const f = r.querySelector(".lane-fill"), rn = r.querySelector(".runner");
+          f.style.width = f.dataset.w + "%";
+          rn.style.left = rn.dataset.left + "%";
+        });
+      }));
+    }
+    if (dataLoaded && !confettiShown && done > 0 && !document.body.classList.contains("locked")) {
+      confettiShown = true;
+      launchConfetti();
+    }
   }
 
   function renderForms() {
-    document.getElementById("currentWeek").value = currentWeek;
-    document.getElementById("totalWeeks").value = totalWeeks;
-    const list = document.getElementById("studentForms");
-    list.innerHTML = "";
-    students.forEach((s, i) => {
-      const div = document.createElement("div");
-      div.className = "student-form-item";
-      div.innerHTML = `
-        <input type="text" placeholder="ชื่อนักเรียน" value="${s.name}" onchange="students[${i}].name=this.value"/>
-        <input type="text" placeholder="ชื่อโครงการ" value="${s.project}" onchange="students[${i}].project=this.value"/>
-        <div class="progress-wrap">
-          <input type="range" min="0" max="100" value="${s.progress}"
-            oninput="students[${i}].progress=parseInt(this.value); this.nextElementSibling.textContent=this.value+'%'"/>
-          <span class="progress-num">${s.progress}%</span>
-        </div>
-        <button class="btn-delete" onclick="removeStudent(${i})">✕</button>
-      `;
-      list.appendChild(div);
+    document.getElementById("weekInput").value = week;
+    document.getElementById("totalInput").value = totalWeeks;
+    const box = document.getElementById("forms");
+    box.innerHTML = "";
+    students.filter(s => roomOf(s) === room).forEach((s, idx) => {
+      const item = document.createElement("div");
+      item.className = "form-item";
+      item.innerHTML = `
+        <div class="form-name">${idx + 1}. ${s.name}<br><span style="font-size:11px;color:#5a7fa8">${s.sid}</span></div>
+        <input type="range" min="0" max="100" step="5" value="${progress[s.id]}">
+        <div class="form-num">${progress[s.id]}%</div>`;
+      const slider = item.querySelector("input");
+      const num = item.querySelector(".form-num");
+      slider.addEventListener("input", () => {
+        progress[s.id] = parseInt(slider.value);
+        num.textContent = slider.value + "%";
+        markDirty();
+      });
+      box.appendChild(item);
+    });
+    setStatus();
+    renderGitHub();
+  }
+
+  function downloadData() {
+    saveDraft();
+    const data = { week, totalWeeks, progress };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "progress.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    renderDashboard();
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("page-" + btn.dataset.page).classList.add("active");
+      if (btn.dataset.page === "admin") renderForms();
+      else {
+        week = parseInt(document.getElementById("weekInput").value) || week;
+        totalWeeks = parseInt(document.getElementById("totalInput").value) || totalWeeks;
+        renderDashboard();
+      }
+    });
+  });
+
+  function renderRoomBtns() {
+    document.querySelectorAll(".room-btns").forEach(c => {
+      c.innerHTML = [1, 2].map(r =>
+        `<button class="room-btn${r === room ? " active" : ""}" data-room="${r}">ห้อง ${r} (${students.filter(s => roomOf(s) === r).length})</button>`
+      ).join("");
     });
   }
-
-  function addStudent() {
-    students.push({ name: "", project: "", progress: 0 });
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".room-btn");
+    if (!b) return;
+    room = parseInt(b.dataset.room);
+    animateNext = true;
+    week = parseInt(document.getElementById("weekInput").value) || week;
+    totalWeeks = parseInt(document.getElementById("totalInput").value) || totalWeeks;
+    renderRoomBtns();
+    renderDashboard();
     renderForms();
+  });
+  renderRoomBtns();
+
+  document.getElementById("searchInput").addEventListener("input", renderDashboard);
+
+  document.getElementById("sortBtn").addEventListener("click", e => {
+    sortOn = !sortOn;
+    e.target.classList.toggle("on", sortOn);
+    renderDashboard();
+  });
+  document.getElementById("downloadBtn").addEventListener("click", downloadData);
+  document.getElementById("saveBtn").addEventListener("click", saveAndPublish);
+  document.getElementById("ghConnectBtn").addEventListener("click", connectGitHub);
+  document.getElementById("ghDisconnectBtn").addEventListener("click", disconnectGitHub);
+  document.getElementById("clearBtn").addEventListener("click", clearDraft);
+  document.getElementById("weekInput").addEventListener("input", markDirty);
+  document.getElementById("totalInput").addEventListener("input", markDirty);
+
+  // ============================================
+  // ระบบล็อกอิน
+  //   นักศึกษา = ใช้รหัสนักศึกษา
+  //   อาจารย์  = ใช้ชื่ออาจารย์ (ไม่ต้องใส่รหัสผ่าน)
+  // ============================================
+
+  // ✏️ รายชื่อผู้ที่เข้าโหมดอาจารย์ได้
+  //   names = ชื่อที่พิมพ์แล้วเข้าได้ (ใส่ได้หลายแบบ, ชื่อแรกใช้แสดงบนหน้าเว็บ)
+  //   title = ข้อความที่แสดงต่อท้ายชื่อ, icon = ไอคอนหน้าชื่อ
+  const teachers = [
+    { names: ["นายณัฏฐกร คุณสมบัติ", "ณัฏฐกร คุณสมบัติ"], title: "ผู้จัดทำ", icon: "🧑‍💻" },
+    { names: ["นายบุญมี จันทร์มาก", "บุญมี จันทร์มาก", "อาจารย์บุญมี จันทร์มาก"], title: "อาจารย์", icon: "👨‍🏫" },
+    { names: ["อาจารย์"], title: "อาจารย์", icon: "👩‍🏫" },
+  ];
+
+  let loginRole = "student";
+  const norm = t => t.replace(/\s+/g, "").toLowerCase();
+
+  function setRole(r) {
+    loginRole = r;
+    document.querySelectorAll(".role-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.role === r));
+    const inp = document.getElementById("loginInput");
+    inp.value = "";
+    inp.placeholder = r === "student" ? "รหัสนักศึกษา 11 หลัก" : "ชื่ออาจารย์";
+    inp.inputMode = r === "student" ? "numeric" : "text";
+    inp.maxLength = r === "student" ? 11 : 60;
+    document.getElementById("loginErr").textContent = "";
+    inp.focus();
   }
 
-  function removeStudent(i) {
-    students.splice(i, 1);
-    renderForms();
+  function applyLogin(user) {
+    // user = { role: "student", student: {...} } หรือ { role: "teacher", name: "..." }
+    const isStudent = user.role === "student";
+    currentUser = isStudent ? user.student : null;
+    userRole = user.role;
+    dirty = false;
+    syncState();
+    document.body.classList.remove("locked");
+    document.getElementById("userInfo").textContent = isStudent
+      ? `👤 ${user.student.name} · ${user.student.sid}`
+      : `${user.icon} ${user.name} · ${user.title}`;
+    // นักศึกษาดูได้อย่างเดียว (ซ่อนแท็บจัดการข้อมูล) / อาจารย์เห็นทั้งสองแท็บ
+    document.querySelector('.tab-btn[data-page="admin"]').style.display = isStudent ? "none" : "";
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.page === "dashboard"));
+    document.querySelectorAll(".page").forEach(pg => pg.classList.toggle("active", pg.id === "page-dashboard"));
+    room = isStudent ? roomOf(user.student) : 1;
+    animateNext = true;
+    renderRoomBtns();
+    renderDashboard();
   }
 
-  function saveData() {
-    currentWeek = parseInt(document.getElementById("currentWeek").value) || 1;
-    totalWeeks  = parseInt(document.getElementById("totalWeeks").value) || 10;
-    localStorage.setItem("dashboard_students", JSON.stringify(students));
-    localStorage.setItem("dashboard_week", currentWeek);
-    localStorage.setItem("dashboard_totalWeeks", totalWeeks);
-    const msg = document.getElementById("savedMsg");
-    msg.style.display = "block";
-    setTimeout(() => msg.style.display = "none", 2500);
+  function saveSession(v) { try { sessionStorage.setItem("user", v); } catch (e) {} }
+
+  function doLogin() {
+    const v = document.getElementById("loginInput").value.trim();
+    const err = document.getElementById("loginErr");
+    if (loginRole === "student") {
+      const s = students.find(x => x.sid === v);
+      if (!s) { err.textContent = "ไม่พบรหัสนักศึกษานี้ในระบบ"; return; }
+      saveSession("student:" + s.sid);
+      err.textContent = "";
+      applyLogin({ role: "student", student: s });
+    } else {
+      const t = v && teachers.find(x => x.names.some(n => norm(n) === norm(v)));
+      if (!t) { err.textContent = "ไม่พบชื่ออาจารย์นี้ในระบบ"; return; }
+      saveSession("teacher:" + t.names[0]);
+      err.textContent = "";
+      applyLogin({ role: "teacher", name: t.names[0], title: t.title, icon: t.icon });
+    }
   }
 
-  // init
-  renderDashboard();
+  function logout() {
+    currentUser = null;
+    userRole = null;
+    try { sessionStorage.removeItem("user"); } catch (e) {}
+    document.body.classList.add("locked");
+    setRole("student");
+  }
+
+  document.querySelectorAll(".role-btn").forEach(btn => btn.addEventListener("click", () => setRole(btn.dataset.role)));
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("loginInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  document.getElementById("logoutBtn").addEventListener("click", logout);
+
+  // จำการล็อกอินไว้ตลอดช่วงที่เปิดแท็บเบราว์เซอร์
+  try {
+    const saved = sessionStorage.getItem("user") || "";
+    if (saved.startsWith("student:")) {
+      const s = students.find(x => x.sid === saved.slice(8));
+      if (s) applyLogin({ role: "student", student: s });
+    } else if (saved.startsWith("teacher:")) {
+      const t = teachers.find(x => x.names[0] === saved.slice(8));
+      if (t) applyLogin({ role: "teacher", name: t.names[0], title: t.title, icon: t.icon });
+    }
+  } catch (e) {}
+
+  renderGitHub();
+
+  // สลับโหมดสว่าง/มืด (จำค่าไว้ในเบราว์เซอร์ของแต่ละคน)
+  function applyTheme(t) {
+    document.documentElement.dataset.theme = t;
+    document.getElementById("themeBtn").textContent = t === "light" ? "🌙" : "☀️";
+  }
+  let theme = "dark";
+  try { theme = localStorage.getItem("theme") || "dark"; } catch (e) {}
+  applyTheme(theme);
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    theme = theme === "light" ? "dark" : "light";
+    applyTheme(theme);
+    try { localStorage.setItem("theme", theme); } catch (e) {}
+  });
+
+  // โหลดข้อมูลล่าสุดจากไฟล์ progress.json
+  fetch("progress.json?t=" + Date.now())
+    .then(r => r.json())
+    .then(d => { published = { week: d.week || 1, totalWeeks: d.totalWeeks || 15, progress: d.progress || {} }; })
+    .catch(() => { published = { week: 1, totalWeeks: 15, progress: {} }; })
+    .finally(() => { dataLoaded = true; syncState(); animateNext = true; renderDashboard(); });
 </script>
 </body>
 </html>
