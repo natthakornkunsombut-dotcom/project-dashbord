@@ -265,6 +265,9 @@
   .gh-on { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; color: var(--ok); }
   .gh-on .btn-sec { flex: 0 0 auto; padding: 8px 12px; }
   .btn-save:disabled { opacity: .6; cursor: wait; }
+
+  .student-info > div:first-child { min-width: 0; }
+  .project-title { font-size: 12.5px; color: var(--cream); opacity: .9; margin-top: 3px; line-height: 1.45; }
 </style>
 </head>
 <body class="locked">
@@ -306,7 +309,7 @@
   <div class="podium" id="podium"></div>
   <div class="summary" id="summary"></div>
   <div class="plan-note" id="planNote"></div>
-  <input type="search" class="search" id="searchInput" placeholder="🔍 ค้นหาชื่อหรือรหัสนักศึกษา">
+  <input type="search" class="search" id="searchInput" placeholder="🔍 ค้นหาชื่อ รหัส หรือชื่อโครงงาน">
   <div class="toolbar"><div class="room-btns"></div><button class="btn-sort" id="sortBtn">เรียงตามความก้าวหน้า</button></div>
   <div class="track-container" id="tracks"></div>
 </div>
@@ -367,53 +370,53 @@
   // รายชื่อนักเรียน (ชื่อโครงการใส่ใน project ได้เลย)
   // ============================================
   const students = [
-    { id: 1, sid: "68319100001",  name: "นางสาวจิณณพัต บัวฉุน",        project: "" },
-    { id: 2, sid: "68319100002",  name: "นางสาวธนาภา แนบเนียน",        project: "" },
-    { id: 3, sid: "68319100003",  name: "นางสาวนันทกา ด้วงมาก",        project: "" },
-    { id: 4, sid: "68319100005",  name: "นางสาวปุณยวีร์ สว่างเนตร",     project: "" },
-    { id: 5, sid: "68319100006",  name: "นางสาวพัชรินทร์พร บ้านสร้าง",   project: "" },
-    { id: 6, sid: "68319100008",  name: "นางสาวเมษา ชั่งทรัพย์",        project: "" },
-    { id: 7, sid: "68319100009",  name: "นางสาวสวิตตา พลสุจริต",       project: "" },
-    { id: 8, sid: "68319100010",  name: "นางสาวสุธาสินี จอกทอง",       project: "" },
-    { id: 9, sid: "68319100011",  name: "นางสาวอนันตยา คุ้มเกรง",      project: "" },
-    { id: 10, sid: "68319100012", name: "นางสาวอนุพร เตยสันเทียะ",     project: "" },
-    { id: 11, sid: "68319100013", name: "นางสาวอภิญญา ปานริทธิ์",      project: "" },
-    { id: 12, sid: "68319100014", name: "นางสาวอมรรัตน์ แจงเจริญ",     project: "" },
-    { id: 13, sid: "68319100015", name: "นางสาวอารยา เฉลยวาเรศ",       project: "" },
-    { id: 14, sid: "68319100016", name: "นายกิตติกานต์ รักษาศรี",       project: "" },
-    { id: 15, sid: "68319100017", name: "นายจตุพร คงนคร",             project: "" },
-    { id: 16, sid: "68319100018", name: "นายจักรพันธ์ ศรีแก้ว",         project: "" },
-    { id: 17, sid: "68319100019", name: "นายจารุกิตต์ ยิ้มนิ่มนวล",      project: "" },
-    { id: 18, sid: "68319100020", name: "นายณัฏฐกร คุณสมบัติ",         project: "" },
-    { id: 19, sid: "68319100021", name: "นายณัฐพงษ์ แก้วโคราช",        project: "" },
-    { id: 20, sid: "68319100022", name: "นายณัฐวัฒน์ ชื่นกมล",          project: "" },
-    { id: 21, sid: "68319100023", name: "นายเตวิช แฟงรัก",            project: "" },
-    { id: 22, sid: "68319100024", name: "นายธนัตถ์สิษฐ์ กุลชนะภิญโญ",   project: "" },
-    { id: 23, sid: "68319100025", name: "นายธีรวุฒิ คุ้มลาภ",           project: "" },
-    { id: 24, sid: "68319100027", name: "นายภาคภูมิ อ่อนเอี่ยม",        project: "" },
-    { id: 25, sid: "68319100028", name: "นายภูริพัฒน์ ทองไพบูลย์",      project: "" },
-    { id: 26, sid: "68319100029", name: "นายรามิล ยอดมีกลิ่น",          project: "" },
-    { id: 27, sid: "68319100030", name: "นายสรวิชญ์ วรรณบูรณ",         project: "" },
-    { id: 28, sid: "68319100031", name: "นายสุทธิภัทร บุญกระจ่าง",      project: "" },
-    { id: 29, sid: "68319100032", name: "นายอนุรักษ์ ชี้แจง",           project: "" },
-    { id: 30, sid: "68319100033", name: "นายอภินันท์ จันทร์ทอง",        project: "" },
-    { id: 31, sid: "68319100034", name: "นางสาวกาญติมา คุณุรัตน์",      project: "" },
-    { id: 32, sid: "68319100035", name: "นางสาวณชนก จันทร์รุ่งเรือง",    project: "" },
-    { id: 33, sid: "68319100036", name: "นางสาวธิดารัตน์ เฉลยทัศน์",     project: "" },
-    { id: 34, sid: "68319100037", name: "นางสาวเบญจพร ดังถวิล",        project: "" },
-    { id: 35, sid: "68319100038", name: "นางสาวอุษามณี นัยชิต",         project: "" },
-    { id: 36, sid: "68319100039", name: "นายกฤษกร ภูมิรัตน์",           project: "" },
-    { id: 37, sid: "68319100040", name: "นายการัณยภาส นามจันดี",       project: "" },
-    { id: 38, sid: "68319100041", name: "นายเกียรติ์สกุล กลัดสนิท",      project: "" },
-    { id: 39, sid: "68319100042", name: "นายณัฐพล พึ่งสุรินทร์",         project: "" },
-    { id: 40, sid: "68319100043", name: "นายตักสิลา แดงประสาน",        project: "" },
-    { id: 41, sid: "68319100044", name: "นายปวริศร์ หุ่นแก้ว",          project: "" },
-    { id: 42, sid: "68319100045", name: "นายภคิน นาคปานเสือ",          project: "" },
-    { id: 43, sid: "68319100046", name: "นายเมฆวัตร คล้ายพงศ์",         project: "" },
-    { id: 44, sid: "68319100047", name: "นายรังสิธร สุขแสงจันทร์",       project: "" },
-    { id: 45, sid: "68319100048", name: "นายอัษราวุธ รสชเอม",          project: "" },
-    { id: 46, sid: "68319100049", name: "นายทิฆัมพร ดงดอน",           project: "" },
-    { id: 47, sid: "68319100050", name: "นายบริพัตร ประเสริฐวงษ์",      project: "" },
+    { id: 1, sid: "68319100001",  name: "นางสาวจิณณพัต บัวฉุน",        project: "สื่อ แอนิเมชั่นเรื่อง มหัศจรรย์ พิทักษ์โลกสิ่งแวดล้อม" },
+    { id: 2, sid: "68319100002",  name: "นางสาวธนาภา แนบเนียน",        project: "สื่อการสอน เรื่อง สำนวนไทยสนุกคิดสนุกเรียน" },
+    { id: 3, sid: "68319100003",  name: "นางสาวนันทกา ด้วงมาก",        project: "สื่อแอนิเมชั่น เรื่อง ตะลุยอาณาจักร ระบบย่อยอาหาร" },
+    { id: 4, sid: "68319100005",  name: "นางสาวปุณยวีร์ สว่างเนตร",     project: "ความแตกต่างระหว่าง Microsoft Excel กับ Google sheets" },
+    { id: 5, sid: "68319100006",  name: "นางสาวพัชรินทร์พร บ้านสร้าง",   project: "เกมการศึกษาสยองขวัญวิชาคอมพิวเตอร์เบื้องต้น" },
+    { id: 6, sid: "68319100008",  name: "นางสาวเมษา ชั่งทรัพย์",        project: "สื่อประชาสัมพันธ์ เรื่อง ไปรษณีย์ไทย Next-Gen ไวกว่าทุกการขนส่ง" },
+    { id: 7, sid: "68319100009",  name: "นางสาวสวิตตา พลสุจริต",       project: "สื่อการสอน เรื่อง การประยุกต์ใช้อินเทอร์เน็ตเพื่อธุรกิจดิจิทัล" },
+    { id: 8, sid: "68319100010",  name: "นางสาวสุธาสินี จอกทอง",       project: "สื่อการสอน CAI เรื่อง ความปลอดภัยในการใช้งานอินเทอร์เน็ต" },
+    { id: 9, sid: "68319100011",  name: "นางสาวอนันตยา คุ้มเกรง",      project: "พอร์ตโฟลิโอโดยปัญญาประดิษฐ์" },
+    { id: 10, sid: "68319100012", name: "นางสาวอนุพร เตยสันเทียะ",     project: "สื่อการเรียนรู้เรื่องภาษีเพื่อเตรียมความพร้อมก่อนเริ่มทำงาน" },
+    { id: 11, sid: "68319100013", name: "นางสาวอภิญญา ปานริทธิ์",      project: "สื่อการเรียนการสอนแอนิเมชัน 3D เรื่อง การประยุกต์ AI สำหรับธุรกิจด้วย Gemini Notebook" },
+    { id: 12, sid: "68319100014", name: "นางสาวอมรรัตน์ แจงเจริญ",     project: "ตู้พีเรียด เดย์" },
+    { id: 13, sid: "68319100015", name: "นางสาวอารยา เฉลยวาเรศ",       project: "ระบบบริหารจัดการรายวิชาโครงงาน" },
+    { id: 14, sid: "68319100016", name: "นายกิตติกานต์ รักษาศรี",       project: "โครงงาน เกมสัญญาณเครือข่ายคอมพิวเตอร์ Netwable" },
+    { id: 15, sid: "68319100017", name: "นายจตุพร คงนคร",             project: "เกมการเรียนรู้ เรื่อง ระบบฐานข้อมูลเบื้องต้น" },
+    { id: 16, sid: "68319100018", name: "นายจักรพันธ์ ศรีแก้ว",         project: "Smart Barcode Mobile Charging Locker" },
+    { id: 17, sid: "68319100019", name: "นายจารุกิตต์ ยิ้มนิ่มนวล",      project: "เกมการศึกษาสยองขวัญวิชาคอมพิวเตอร์เบื้องต้น" },
+    { id: 18, sid: "68319100020", name: "นายณัฏฐกร คุณสมบัติ",         project: "แดชบอร์ดแสดงความก้าวหน้าโครงงาน" },
+    { id: 19, sid: "68319100021", name: "นายณัฐพงษ์ แก้วโคราช",        project: "แอนิเมชั่น เรียนรู้คอมพิวเตอร์ สำหรับศูนย์พัฒนาเด็กเล็ก ตำบลตลาดกรวด" },
+    { id: 20, sid: "68319100022", name: "นายณัฐวัฒน์ ชื่นกมล",          project: "แอนิเมชั่น เรื่อง 9 อาชีพที่สร้างรายได้ในยุคดิจิทัล" },
+    { id: 21, sid: "68319100023", name: "นายเตวิช แฟงรัก",            project: "สื่อการสอน เพื่อส่งเสริมความรู้กฎจราจร ในชุมชนสถานีตำรวจภูธรสามโก้" },
+    { id: 22, sid: "68319100024", name: "นายธนัตถ์สิษฐ์ กุลชนะภิญโญ",   project: "แอนิเมชั่น ขั้นตอนชำระภาษีที่ดินและสิ่งปลูกสร้าง กองคลัง เทศบาลตำบลโพสะ" },
+    { id: 23, sid: "68319100025", name: "นายธีรวุฒิ คุ้มลาภ",           project: "สื่อวิดีโอ ขั้นตอนการทดสอบเครื่องหลังติดตั้งเครื่องลงคะแนนอิเล็กทรอนิกส์" },
+    { id: 24, sid: "68319100027", name: "นายภาคภูมิ อ่อนเอี่ยม",        project: "โครงงานเกมการเรียนรู้เรื่อง อุปกรณ์เครือข่ายคอมพิวเตอร์" },
+    { id: 25, sid: "68319100028", name: "นายภูริพัฒน์ ทองไพบูลย์",      project: "สื่อการสอนพื้นฐาน Scratch ด้วยแอนิเมชั่น" },
+    { id: 26, sid: "68319100029", name: "นายรามิล ยอดมีกลิ่น",          project: "ตู้พีเรียด เดย์" },
+    { id: 27, sid: "68319100030", name: "นายสรวิชญ์ วรรณบูรณ",         project: "สื่อการสอนการใช้งาน Magiclight.ai เพื่อสร้างนิทาน" },
+    { id: 28, sid: "68319100031", name: "นายสุทธิภัทร บุญกระจ่าง",      project: "สื่อการสอน ทำความรู้จักกับแขวงทางหลวงชนบทอ่างทอง" },
+    { id: 29, sid: "68319100032", name: "นายอนุรักษ์ ชี้แจง",           project: "Smart Barcode Mobile Charging Locker" },
+    { id: 30, sid: "68319100033", name: "นายอภินันท์ จันทร์ทอง",        project: "สามสหายวัยร้ายป่วนร่างกาย" },
+    { id: 31, sid: "68319100034", name: "นางสาวกาญติมา คุณุรัตน์",      project: "สื่อมัลติมีเดียแนะนำ วิทยาลัยเทคนิคอ่างทอง" },
+    { id: 32, sid: "68319100035", name: "นางสาวณชนก จันทร์รุ่งเรือง",    project: "เกมการใช้พลังงานไฟฟ้าอย่างคุ้มค่าและปลอดภัย" },
+    { id: 33, sid: "68319100036", name: "นางสาวธิดารัตน์ เฉลยทัศน์",     project: "นิทานเรื่อง เจ้ากระต่ายน้อยกับปัญญาประดิษฐ์วิเศษ" },
+    { id: 34, sid: "68319100037", name: "นางสาวเบญจพร ดังถวิล",        project: "เกมการใช้พลังงานไฟฟ้าอย่างคุ้มค่าและปลอดภัย" },
+    { id: 35, sid: "68319100038", name: "นางสาวอุษามณี นัยชิต",         project: "สื่อการสอนเรื่อง การดูแลและบำรุงรักษาคอมพิวเตอร์" },
+    { id: 36, sid: "68319100039", name: "นายกฤษกร ภูมิรัตน์",           project: "เกมพิกเซลต่อสู้กับไวรัสคอมพิวเตอร์" },
+    { id: 37, sid: "68319100040", name: "นายการัณยภาส นามจันดี",       project: "เกมการเรียนรู้ เรื่อง ระบบฐานข้อมูลเบื้องต้น" },
+    { id: 38, sid: "68319100041", name: "นายเกียรติ์สกุล กลัดสนิท",      project: "เกมผจญภัย 2 มิติ เพื่อส่งเสริมความรู้ด้านความปลอดภัยทางไซเบอร์" },
+    { id: 39, sid: "68319100042", name: "นายณัฐพล พึ่งสุรินทร์",         project: "เกมผจญภัยทดสอบความรู้ วิชา กฎหมายในงานอาชีพธุรกิจดิจิทัล" },
+    { id: 40, sid: "68319100043", name: "นายตักสิลา แดงประสาน",        project: "เกมจำลองประกอบคอมบนแพลตฟอร์มโรบรอก" },
+    { id: 41, sid: "68319100044", name: "นายปวริศร์ หุ่นแก้ว",          project: "โครงงานการเอาตัวรอดในเรื่องระบบเลขฐาน" },
+    { id: 42, sid: "68319100045", name: "นายภคิน นาคปานเสือ",          project: "โครงงานการเอาตัวรอดในเรื่องระบบเลขฐาน" },
+    { id: 43, sid: "68319100046", name: "นายเมฆวัตร คล้ายพงศ์",         project: "การพัฒนาเกมการศึกษาเชิงผจญภัย เรื่องอุปกรณ์ภายในเคสคอมพิวเตอร์ สำหรับนักศึกษา" },
+    { id: 44, sid: "68319100047", name: "นายรังสิธร สุขแสงจันทร์",       project: "ตะลุยด่าน งานบำรุงรักษาคอมพิวเตอร์" },
+    { id: 45, sid: "68319100048", name: "นายอัษราวุธ รสชเอม",          project: "ระบบเช็คชื่อในสำนักงานเพื่อความโปร่งใส" },
+    { id: 46, sid: "68319100049", name: "นายทิฆัมพร ดงดอน",           project: "เกมต่อสู้กับ Monster เพื่อเรียนรู้การสร้างเว็บไซต์" },
+    { id: 47, sid: "68319100050", name: "นายบริพัตร ประเสริฐวงษ์",      project: "เกมต่อสู้กับ Monster เพื่อเรียนรู้การสร้างเว็บไซต์" },
   ];
 
   // ============================================
@@ -426,7 +429,9 @@
   students.forEach(s => progress[s.id] = 0);
 
   let dataLoaded = false, animateNext = true, confettiShown = false;
-  let userRole = null, published = null, dirty = false;
+  let userRole = null, published = null, dirty = false, publishSeq = 0;
+  const POLL_MS = 5000;      // ตรวจว่าเว็บอัปเดตแล้วหรือยัง (หลังกดบันทึก)
+  const REFRESH_MS = 60000;  // รีเฟรชข้อมูลอัตโนมัติทุกกี่มิลลิวินาที
 
   function launchConfetti() {
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -529,10 +534,41 @@
     return { ok: false, status: 409 };
   }
 
+  // รอจนกว่า progress.json บนเว็บจริงจะตรงกับที่เพิ่งส่ง (GitHub Pages ใช้เวลา ~1 นาที)
+  async function watchLive(expected) {
+    const key = JSON.stringify(expected);
+    for (let i = 0; i < 40; i++) {
+      await new Promise(r => setTimeout(r, POLL_MS));
+      try {
+        const r = await fetch("progress.json?t=" + Date.now(), { cache: "no-store" });
+        const d = await r.json();
+        if (JSON.stringify({ week: d.week, totalWeeks: d.totalWeeks, progress: d.progress }) === key) return true;
+      } catch (e) {}
+    }
+    return false;
+  }
+
+  // ผู้ที่เปิดหน้าแดชบอร์ดค้างไว้จะเห็นข้อมูลใหม่เอง ไม่ต้องรีเฟรช
+  async function refreshPublished() {
+    if (document.hidden || document.body.classList.contains("locked")) return;
+    try {
+      const r = await fetch("progress.json?t=" + Date.now(), { cache: "no-store" });
+      const d = await r.json();
+      const next = { week: d.week || 1, totalWeeks: d.totalWeeks || 15, progress: d.progress || {} };
+      if (published && JSON.stringify(next) === JSON.stringify(published)) return;
+      published = next;
+      if (document.getElementById("page-dashboard").classList.contains("active")) {
+        syncState();
+        renderDashboard();
+      }
+    } catch (e) {}
+  }
+
   async function saveAndPublish() {
     if (!saveDraft()) return;
     renderDashboard();
     if (!ghToken()) return;
+    const my = ++publishSeq;
     const btn = document.getElementById("saveBtn");
     btn.disabled = true;
     setStatus("⏳ กำลังส่งขึ้นเว็บ...");
@@ -540,7 +576,14 @@
       const r = await publishToGitHub();
       if (r.ok) {
         published = { week, totalWeeks, progress: { ...progress } };
-        setStatus("✅ ส่งขึ้นเว็บแล้ว ทุกคนจะเห็นข้อมูลใหม่ภายใน 1-2 นาที", true);
+        const expected = { week, totalWeeks, progress: { ...progress } };
+        setStatus("✅ ส่งขึ้น GitHub แล้ว กำลังรอให้เว็บอัปเดต (ประมาณ 1 นาที)...", true);
+        watchLive(expected).then(ok => {
+          if (my !== publishSeq || dirty) return;
+          setStatus(ok
+            ? "✅ ข้อมูลใหม่ขึ้นเว็บจริงแล้ว ทุกคนเห็นแล้ว"
+            : "ℹ️ ส่งแล้ว แต่เว็บยังไม่อัปเดต รอสักครู่แล้วลองรีเฟรชหน้าเว็บ", ok);
+        });
       } else if (r.status === 401) {
         setStatus("⚠️ token ไม่ถูกต้องหรือหมดอายุ (บันทึกในเครื่องไว้แล้ว) สร้าง token ใหม่แล้วเชื่อมอีกครั้ง");
       } else if (r.status === 403 || r.status === 404) {
@@ -646,7 +689,7 @@
       ? [...inRoom].sort((x, y) => progress[y.id] - progress[x.id])
       : inRoom;
     const q = document.getElementById("searchInput").value.trim().toLowerCase();
-    if (q) list = list.filter(s => s.name.toLowerCase().includes(q) || s.sid.includes(q));
+    if (q) list = list.filter(s => s.name.toLowerCase().includes(q) || s.sid.includes(q) || (s.project || "").toLowerCase().includes(q));
 
     const box = document.getElementById("tracks");
     box.innerHTML = "";
@@ -666,7 +709,8 @@
         <div class="student-info">
           <div>
             <div class="student-name"><span class="student-no">${inRoom.indexOf(s) + 1}.</span>${s.name}</div>
-            <div class="project-name">รหัส ${s.sid}${s.project ? " · " + s.project : ""}</div>
+            <div class="project-name">รหัส ${s.sid}</div>
+            ${s.project ? `<div class="project-title">📌 ${s.project}</div>` : ""}
           </div>
           <div class="right">
             <span class="badge b-${st.k}">${st.t}</span>
@@ -708,7 +752,7 @@
       const item = document.createElement("div");
       item.className = "form-item";
       item.innerHTML = `
-        <div class="form-name">${idx + 1}. ${s.name}<br><span style="font-size:11px;color:#5a7fa8">${s.sid}</span></div>
+        <div class="form-name">${idx + 1}. ${s.name}<br><span style="font-size:11px;color:#5a7fa8">${s.sid}${s.project ? " · " + s.project : ""}</span></div>
         <input type="range" min="0" max="100" step="5" value="${progress[s.id]}">
         <div class="form-num">${progress[s.id]}%</div>`;
       const slider = item.querySelector("input");
@@ -883,6 +927,7 @@
   } catch (e) {}
 
   renderGitHub();
+  setInterval(refreshPublished, REFRESH_MS);
 
   // สลับโหมดสว่าง/มืด (จำค่าไว้ในเบราว์เซอร์ของแต่ละคน)
   function applyTheme(t) {
